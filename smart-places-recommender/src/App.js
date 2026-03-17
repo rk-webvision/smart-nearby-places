@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import SearchMood from "./components/SearchMood";
 import MapView from "./components/MapView";
@@ -7,38 +7,35 @@ import PlaceCard from "./components/PlaceCard";
 function App() {
 
   const [places, setPlaces] = useState([]);
+  const [moodType, setMoodType] = useState(null);
+  const [location, setLocation] = useState(null);
 
+  // Get user location
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition((pos) => {
+
+      const userLocation = {
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
+      };
+
+      setLocation(userLocation);
+    });
+  }, []);
+
+  // Mood → Google type mapping
   const handleMoodSelect = (mood) => {
 
-    // Temporary mock data (later we will fetch from Google Places API)
-    const mockPlaces = [
-      {
-        name: "Cafe Coffee Day",
-        rating: 4.2,
-        vicinity: "FC Road",
-        geometry: {
-          location: { lat: 18.5204, lng: 73.8567 }
-        }
-      },
-      {
-        name: "Starbucks",
-        rating: 4.5,
-        vicinity: "Koregaon Park",
-        geometry: {
-          location: { lat: 18.5362, lng: 73.8930 }
-        }
-      },
-      {
-        name: "McDonald's",
-        rating: 4.0,
-        vicinity: "JM Road",
-        geometry: {
-          location: { lat: 18.5308, lng: 73.8475 }
-        }
-      }
-    ];
+    const mapping = {
+      Work: "cafe",
+      Date: "restaurant",
+      "Quick Bite": "restaurant",  // fixed
+      Budget: "restaurant",
+    };
 
-    setPlaces(mockPlaces);
+    const type = mapping[mood];
+
+    setMoodType(type);
   };
 
   return (
@@ -48,7 +45,12 @@ function App() {
 
       <SearchMood onSelect={handleMoodSelect} />
 
-      <MapView places={places} />
+      <MapView
+        places={places}
+        setPlaces={setPlaces}
+        moodType={moodType}
+        location={location}
+      />
 
       <div className="places-list">
         {places.map((place, index) => (

@@ -1,26 +1,63 @@
-import React from "react";
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import React, { useEffect, useState } from "react";
+import {
+  GoogleMap,
+  LoadScript,
+  Marker,
+} from "@react-google-maps/api";
+
+// ✅ FIX: keep libraries outside component (prevents reload warning)
+const libraries = ["places"];
 
 const containerStyle = {
   width: "100%",
   height: "400px",
 };
 
-const center = {
-  lat: 18.5204,
-  lng: 73.8567,
-};
+function MapView({ places, setPlaces, moodType, location }) {
 
-function MapView({ places }) {
+  const [map, setMap] = useState(null);
+
+  useEffect(() => {
+
+
+    if (!map || !moodType || !location) return;
+
+    const service = new window.google.maps.places.PlacesService(map);
+
+    const request = {
+      location: new window.google.maps.LatLng(location.lat, location.lng),
+      radius: 3000, // increased radius
+      type: moodType,
+    };
+
+    service.nearbySearch(request, (results, status) => {
+
+      if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+        setPlaces(results);
+      }
+    });
+
+  }, [map, moodType, location, setPlaces]);
+
   return (
-    <LoadScript googleMapsApiKey={process.env.REACT_APP_GOOGLE_API_KEY}>
-      <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={13}>
+    <LoadScript
+      googleMapsApiKey={process.env.REACT_APP_GOOGLE_API_KEY}
+      libraries={libraries}
+    >
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={location || { lat: 18.5204, lng: 73.8567 }}
+        zoom={14}
+        onLoad={(mapInstance) => {
+          setMap(mapInstance);
+        }}
+      >
         {places.map((place, index) => (
           <Marker
             key={index}
             position={{
-              lat: place.geometry.location.lat,
-              lng: place.geometry.location.lng,
+              lat: place.geometry.location.lat(),
+              lng: place.geometry.location.lng(),
             }}
           />
         ))}

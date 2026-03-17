@@ -1,6 +1,6 @@
 import React from "react";
 
-const moods = ["Work", "Date", "QuickBite", "Budget"];
+const moods = ["Work", "Date", "Quick Bite", "Budget"];
 
 export default function SearchMood({ onSelect }) {
   return (

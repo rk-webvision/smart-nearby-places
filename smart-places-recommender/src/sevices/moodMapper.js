@@ -1,6 +1,6 @@
 export const moodMap = {
   Work: "cafe",
   Date: "restaurant",
-  QuickBite: "fast_food",
+  "Quick Bite": "fast_food",
   Budget: "meal_takeaway",
 };

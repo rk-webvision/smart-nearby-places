@@ -1,7 +1,11 @@
+// Utility function to calculate distance between two coordinates
+// Uses Haversine formula (accurate for earth distance)
 export function calculateDistance(lat1, lon1, lat2, lon2) {
+
+  // If location not ready, return 0
   if (!lat1 || !lat2) return 0;
 
-  const R = 6371;
+  const R = 6371; // Radius of Earth in km
 
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;

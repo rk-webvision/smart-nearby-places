@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import {
-  GoogleMap,
-  LoadScript,
-  Marker,
-} from "@react-google-maps/api";
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 
+// Load Places library for nearby search
 const libraries = ["places"];
 
+// Map container size
 const containerStyle = {
   width: "100%",
   height: "400px",
@@ -14,12 +12,15 @@ const containerStyle = {
 
 function MapView({ places, setPlaces, moodType, location }) {
 
+  // Store map instance after loading
   const [map, setMap] = useState(null);
 
+  // Fetch nearby places when map, mood, and location are ready
   useEffect(() => {
 
     if (!map || !moodType || !location) return;
 
+    // Initialize Places service using map instance
     const service = new window.google.maps.places.PlacesService(map);
 
     const request = {
@@ -28,8 +29,10 @@ function MapView({ places, setPlaces, moodType, location }) {
       type: moodType,
     };
 
+    // Call Google Places API
     service.nearbySearch(request, (results, status) => {
 
+      // If API call successful, update places state
       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
         setPlaces(results);
       }
@@ -48,6 +51,8 @@ function MapView({ places, setPlaces, moodType, location }) {
         zoom={14}
         onLoad={(mapInstance) => setMap(mapInstance)}
       >
+
+        {/* Render markers for each place */}
         {places.map((place, index) => (
           <Marker
             key={index}
@@ -57,6 +62,7 @@ function MapView({ places, setPlaces, moodType, location }) {
             }}
           />
         ))}
+
       </GoogleMap>
     </LoadScript>
   );

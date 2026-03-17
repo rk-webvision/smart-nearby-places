@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "./App.css";
 import SearchMood from "./components/SearchMood";
 import MapView from "./components/MapView";
 import PlaceCard from "./components/PlaceCard";
@@ -8,36 +7,41 @@ import { calculateDistance } from "./utils/distance";
 
 function App() {
 
+  // Stores list of places fetched from Google Places API
   const [places, setPlaces] = useState([]);
+
+  // Stores selected mood mapped to Google place type (cafe, restaurant, etc.)
   const [moodType, setMoodType] = useState(null);
+
+  // Stores user's current geolocation
   const [location, setLocation] = useState(null);
+
+  // Stores active filter (rating, distance, open)
   const [filter, setFilter] = useState(null);
 
+  // Get user's current location using browser API
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((pos) => {
-      const userLocation = {
+      setLocation({
         lat: pos.coords.latitude,
         lng: pos.coords.longitude,
-      };
-      setLocation(userLocation);
+      });
     });
   }, []);
 
+  // Map user mood to Google Places API type
   const handleMoodSelect = (mood) => {
     const mapping = {
       Work: "cafe",
       Date: "restaurant",
       "Quick Bite": "restaurant",
-      QuickBite: "restaurant",
       Budget: "restaurant",
     };
 
-    const type = mapping[mood];
-
-    setMoodType(type);
+    setMoodType(mapping[mood]);
   };
 
-  // Add distance
+  // Add distance (km) to each place using Haversine formula
   const processedPlaces = places.map((place) => {
     const distance = calculateDistance(
       location?.lat,
@@ -52,7 +56,7 @@ function App() {
     };
   });
 
-  // Apply filters
+  // Apply filters (sorting + filtering logic)
   let finalPlaces = [...processedPlaces];
 
   if (filter === "rating") {
@@ -70,25 +74,39 @@ function App() {
   }
 
   return (
-    <div className="App">
+    <div className="min-h-screen p-4">
 
-      <h1>Smart Nearby Places Recommender</h1>
+      {/* App title */}
+      <h1 className="text-2xl font-bold text-center mb-4">
+        Smart Nearby Places
+      </h1>
 
+      {/* Mood selection buttons */}
       <SearchMood onSelect={handleMoodSelect} />
 
+      {/* Filter buttons */}
       <Filters setFilter={setFilter} />
 
-      <MapView
-        places={finalPlaces}
-        setPlaces={setPlaces}
-        moodType={moodType}
-        location={location}
-      />
+      {/* Layout: Map + List */}
+      <div className="grid md:grid-cols-2 gap-4 mt-4">
 
-      <div className="places-list">
-        {finalPlaces.map((place, index) => (
-          <PlaceCard key={index} place={place} />
-        ))}
+        {/* Map section */}
+        <div className="bg-white rounded-xl shadow">
+          <MapView
+            places={finalPlaces}
+            setPlaces={setPlaces}
+            moodType={moodType}
+            location={location}
+          />
+        </div>
+
+        {/* Places list */}
+        <div className="h-[400px] overflow-y-auto">
+          {finalPlaces.map((place, index) => (
+            <PlaceCard key={index} place={place} />
+          ))}
+        </div>
+
       </div>
 
     </div>

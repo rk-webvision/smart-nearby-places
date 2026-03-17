@@ -5,7 +5,6 @@ import {
   Marker,
 } from "@react-google-maps/api";
 
-// ✅ FIX: keep libraries outside component (prevents reload warning)
 const libraries = ["places"];
 
 const containerStyle = {
@@ -19,14 +18,13 @@ function MapView({ places, setPlaces, moodType, location }) {
 
   useEffect(() => {
 
-
     if (!map || !moodType || !location) return;
 
     const service = new window.google.maps.places.PlacesService(map);
 
     const request = {
       location: new window.google.maps.LatLng(location.lat, location.lng),
-      radius: 3000, // increased radius
+      radius: 3000,
       type: moodType,
     };
 
@@ -48,9 +46,7 @@ function MapView({ places, setPlaces, moodType, location }) {
         mapContainerStyle={containerStyle}
         center={location || { lat: 18.5204, lng: 73.8567 }}
         zoom={14}
-        onLoad={(mapInstance) => {
-          setMap(mapInstance);
-        }}
+        onLoad={(mapInstance) => setMap(mapInstance)}
       >
         {places.map((place, index) => (
           <Marker

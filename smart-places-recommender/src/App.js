@@ -78,7 +78,7 @@ function App() {
 
       {/* App title */}
       <h1 className="text-2xl font-bold text-center mb-4">
-        Smart Nearby Places
+        VibeSpot
       </h1>
 
       {/* Mood selection buttons */}
